@@ -37,7 +37,7 @@ public class AirportController {
         //Incase of a tie return the Lexicographically smallest airportName
         String ans="";
         try{
-            ans= serviceLayerObj.getLargestAirportName();
+            ans = serviceLayerObj.getLargestAirportName();
         }catch(Exception e){
             System.out.println(e.getMessage());
         }

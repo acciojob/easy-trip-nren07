@@ -137,17 +137,18 @@ public class ServiceLayer {
     }
     public int countOfBookingsDoneByPassengerAllCombined(Integer passengerId){
         Map<Integer, List<Flight>>flightListMap=repositoryLayerObj.getFlightListMap(); //by passengerId
-        return flightListMap.getOrDefault(passengerId,null).size();
+        return flightListMap.get(passengerId).size();
     }
 
-    public int calculateFlightFare(Integer flightId){
+    public int calculateFlightFare(Integer flightId) throws Exception{
         int size=repositoryLayerObj.getPassengerList(flightId).size();
         return 3000+size*50;
     }
 
-    public int getNumberOfPeopleOn(Date date, String airportName){
+    public int getNumberOfPeopleOn(Date date, String airportName) throws Exception{
         Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
         Map<String,Airport>airportMap=repositoryLayerObj.getAirportMap();
+        if(!airportMap.containsKey(airportMap)) throw new Exception("airport Name is not found");
         City city=airportMap.get(airportName).getCity();
         int cnt=0;
         for(Flight flight : flightMap.values() ){

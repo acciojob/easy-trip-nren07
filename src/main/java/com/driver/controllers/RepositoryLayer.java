@@ -68,11 +68,13 @@ public class RepositoryLayer {
         this.flightListMap = flightListMap;
     }
 
-    public List<Flight> getFlights(Integer personId){
+    public List<Flight> getFlights(Integer personId) throws Exception{
+        if(!flightMap.containsKey(personId)) throw new Exception("personId not found");
         return flightListMap.getOrDefault(personId,new ArrayList<>());
     }
 
-    public List<Passenger> getPassengerList(Integer flightId){
+    public List<Passenger> getPassengerList(Integer flightId) throws Exception{
+        if(!passengerListMap.containsKey(flightId)) throw new Exception("personId not found");
         return passengerListMap.getOrDefault(flightId,new ArrayList<>());
     }
 }
