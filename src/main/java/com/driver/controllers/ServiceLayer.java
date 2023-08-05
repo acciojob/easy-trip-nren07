@@ -76,9 +76,8 @@ public class ServiceLayer {
     public String getAirportNameFromFlightId(Integer flightId) throws Exception{
         Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
         Map<String,Airport>airportMap=repositoryLayerObj.getAirportMap();
-
-        Flight flight=flightMap.getOrDefault(flightId,null);
-        if(flight==null) throw new Exception("flight is null");
+        if(!flightMap.containsKey(flightId)) throw new Exception("flight is null");
+        Flight flight=flightMap.get(flightId);
         Airport ansAirport=null;
         for(Airport airport:airportMap.values()){
             if(airport.getCity().equals(flight.getFromCity())) ansAirport=airport;
@@ -135,8 +134,9 @@ public class ServiceLayer {
         repositoryLayerObj.setPassengerListMap(passengerListMap);
         return "SUCCESS";
     }
-    public int countOfBookingsDoneByPassengerAllCombined(Integer passengerId){
+    public int countOfBookingsDoneByPassengerAllCombined(Integer passengerId)throws Exception{
         Map<Integer, List<Flight>>flightListMap=repositoryLayerObj.getFlightListMap(); //by passengerId
+        if(!flightListMap.containsKey(passengerId)) throw new Exception("passengerId not found");
         return flightListMap.get(passengerId).size();
     }
 
@@ -152,7 +152,9 @@ public class ServiceLayer {
         City city=airportMap.get(airportName).getCity();
         int cnt=0;
         for(Flight flight : flightMap.values() ){
-            if(flight.getFlightDate().equals(date) && (flight.getFromCity().equals(city) || flight.getToCity().equals(city))){
+            if(flight.getFlightDate().equals(date) && flight.getFromCity().equals(city)){
+                cnt++;
+            }else if(flight.getFlightDate().equals(date) && flight.getToCity().equals(city)){
                 cnt++;
             }
         }
