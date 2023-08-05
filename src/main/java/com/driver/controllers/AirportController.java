@@ -49,13 +49,14 @@ public class AirportController {
 
         //Find the duration by finding the shortest flight that connects these 2 cities directly
         //If there is no direct flight between 2 cities return -1.
-        double distance=0;
+        double distance=-1.0;
         try{
-            distance=serviceLayerObj.getShortestDurationOfPossibleBetweenTwoCities(fromCity,toCity);
-        }catch(Exception e){
-            System.out.println(e.getMessage());
+           distance= serviceLayerObj.getShortestDurationOfPossibleBetweenTwoCities(fromCity,toCity);
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
         }
         return distance;
+
     }
 
     @GetMapping("/get-number-of-people-on-airport-on/{date}")

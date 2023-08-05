@@ -90,7 +90,7 @@ public class ServiceLayer {
         Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
         Map<Integer,Passenger>passengerMap=repositoryLayerObj.getPassengerMap();
         if(!flightMap.containsKey(flightId) || !passengerMap.containsKey(passengerId))
-            throw new Exception("may be flight or passenger id is not valid");
+            return "FAILURE";
         Map<Integer,List<Flight>>flightListMap=repositoryLayerObj.getFlightListMap();
         Map<Integer,List<Passenger>>passengerListMap=repositoryLayerObj.getPassengerListMap();
         Flight flight=flightMap.get(flightId);
@@ -115,7 +115,7 @@ public class ServiceLayer {
         Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
         Map<Integer,Passenger>passengerMap=repositoryLayerObj.getPassengerMap();
         if(flightMap.containsKey(flightId) || passengerMap.containsKey(passengerId))
-            throw new Exception("may be flight or passenger id is not valid");
+            return "FAILURE";
         Map<Integer,List<Flight>>flightListMap=repositoryLayerObj.getFlightListMap();
         Map<Integer,List<Passenger>>passengerListMap=repositoryLayerObj.getPassengerListMap();
         Flight flight=flightMap.get(flightId);
