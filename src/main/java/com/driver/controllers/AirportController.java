@@ -8,22 +8,25 @@ import com.driver.model.Passenger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.util.*;
 
 @RestController
 public class AirportController {
 
-    @Autowired
-    private ServiceLayer serviceLayerObj;
-    @Autowired
-    private RepositoryLayer repositoryLayerObj;
+    Map<String, Airport> airportMap=new HashMap<>(); // key airport Name
+    Map<Integer, Flight>flightMap=new HashMap<>();
+    Map<Integer,Passenger>passengerMap=new HashMap<>();
+    Map<Integer, List<Passenger>>passengerListMap=new HashMap<>(); //flight id
+    Map<Integer,List<Flight>>flightListMap=new HashMap<>();  //passenger id
+    Map<Integer,Integer>bookingMap=new HashMap<>();
     @PostMapping("/add_airport")
     public String addAirport(@RequestBody Airport airport){     //new Airport addition in database
 
         //Simply add airport details to your database
         //Return a String message "SUCCESS"
         try{
-            serviceLayerObj.addAirport(airport);
+            String airportName=airport.getAirportName();
+            airportMap.put(airportName,airport);
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
@@ -35,13 +38,26 @@ public class AirportController {
 
         //Largest airport is in terms of terminals. 3 terminal airport is larger than 2 terminal airport
         //Incase of a tie return the Lexicographically smallest airportName
-        String ans="";
+        Airport ansAirport=null;
         try{
-            ans = serviceLayerObj.getLargestAirportName();
+            int max=0;
+            for(Airport airport : airportMap.values()){
+                int terminals=airport.getNoOfTerminals();
+                if(max<terminals) {
+                    max=terminals;
+                    ansAirport=airport;
+                }
+                else if(max==terminals){
+                    if(airport.getAirportName().compareTo(ansAirport.getAirportName())<=0){
+                        ansAirport=airport;
+                    }
+                }
+            }
+
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-        return ans;
+        return ansAirport.getAirportName();
     }
 
     @GetMapping("/get-shortest-time-travel-between-cities")
@@ -51,7 +67,13 @@ public class AirportController {
         //If there is no direct flight between 2 cities return -1.
         double distance=-1.0;
         try{
-           distance= serviceLayerObj.getShortestDurationOfPossibleBetweenTwoCities(fromCity,toCity);
+            for(Flight flight : flightMap.values()) {
+                if (flight.getFromCity().equals(fromCity) && flight.getToCity().equals(toCity)) {
+                    if (distance > flight.getDuration()) {
+                        distance = flight.getDuration();
+                    }
+                }
+            }
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
@@ -64,14 +86,22 @@ public class AirportController {
 
         //Calculate the total number of people who have flights on that day on a particular airport
         //This includes both the people who have come for a flight and who have landed on an airport after their flight
-        int ans=0;
+        int cnt=0;
         try {
-            ans=serviceLayerObj.getNumberOfPeopleOn(date,airportName);
+            City city=airportMap.get(airportName).getCity();
+
+            for(Flight flight : flightMap.values() ){
+                if(flight.getFlightDate().equals(date) && flight.getFromCity().equals(city)){
+                    cnt++;
+                }else if(flight.getFlightDate().equals(date) && flight.getToCity().equals(city)){
+                    cnt++;
+                }
+            }
         }
         catch (Exception e){
             System.out.printf(e.getMessage());
         }
-        return ans;
+        return cnt;
     }
 
     @GetMapping("/calculate-fare")
@@ -83,7 +113,8 @@ public class AirportController {
         //This will not include the current person who is trying to book, he might also be just checking price
         int fare=0;
         try{
-            fare=serviceLayerObj.calculateFlightFare(flightId);
+            int size=getPassengerList(flightId).size();
+            fare= 3000+size*50;
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
@@ -100,7 +131,23 @@ public class AirportController {
         //else if you are able to book a ticket then return "SUCCESS"
 
         try{
-            return serviceLayerObj.bookATicket(flightId,passengerId);
+            if(!flightMap.containsKey(flightId) || !passengerMap.containsKey(passengerId))
+                return "FAILURE";
+
+            Flight flight=flightMap.get(flightId);
+            Passenger passenger=passengerMap.get(passengerId);
+            if(passengerListMap.containsKey(flightId) && passengerListMap.get(flightId).contains(passenger)){
+                return "FAILURE";
+            }
+            if(passengerListMap.containsKey(flightId)){
+                if(flight.getMaxCapacity()==passengerListMap.get(flightId).size()) return "FAILURE";
+            }
+            List<Flight>oldFlightList=flightListMap.getOrDefault(passengerId,new ArrayList<>());
+            oldFlightList.add(flight);
+            List<Passenger>oldPassengerList=passengerListMap.getOrDefault(flightId,new ArrayList<>());
+            oldPassengerList.add(passenger);
+            flightListMap.put(passengerId,oldFlightList);
+            passengerListMap.put(flightId,oldPassengerList);
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
@@ -116,11 +163,28 @@ public class AirportController {
         // and also cancel the ticket that passenger had booked earlier on the given flightId
         String ans="";
         try{
-            ans=serviceLayerObj.cancelATicket(flightId,passengerId);
+            if(flightMap.containsKey(flightId) || passengerMap.containsKey(passengerId))
+                return "FAILURE";
+
+            Flight flight=flightMap.get(flightId);
+            Passenger passenger=passengerMap.get(passengerId);
+            if(!passengerListMap.containsKey(flightId) || !passengerListMap.get(flightId).contains(passenger)){
+                return "FAILURE";
+            }
+            if(passengerListMap.containsKey(flightId)){
+                if(flight.getMaxCapacity()==passengerListMap.get(flightId).size()) return "FAILURE";
+            }
+            List<Flight>oldFlightList=flightListMap.getOrDefault(passengerId,new ArrayList<>());
+            oldFlightList.remove(flight);
+            List<Passenger>oldPassengerList=passengerListMap.getOrDefault(flightId,new ArrayList<>());
+            oldPassengerList.remove(passenger);
+            flightListMap.put(passengerId,oldFlightList);
+            passengerListMap.put(flightId,oldPassengerList);
+
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-        return ans;
+        return "SUCCESS";
     }
 
 
@@ -130,7 +194,7 @@ public class AirportController {
         //Tell the count of flight bookings done by a passenger: This will tell the total count of flight bookings done by a passenger :
         int ans=0;
         try{
-            ans=serviceLayerObj.countOfBookingsDoneByPassengerAllCombined(passengerId);
+            ans= flightListMap.get(passengerId).size();
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
@@ -142,7 +206,8 @@ public class AirportController {
 
         //Return a "SUCCESS" message string after adding a flight
         try{
-            serviceLayerObj.addFlight(flight);
+            int id=flight.getFlightId();
+            flightMap.put(id,flight);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -155,13 +220,17 @@ public class AirportController {
 
         //We need to get the starting airportName from where the flight will be taking off (Hint think of City variable if that can be of some use)
         //return null incase the flightId is invalid or you are not able to find the airportName
-        String ans="";
+        Airport ansAirport=null;
         try{
-            ans=serviceLayerObj.getAirportNameFromFlightId(flightId);
+            Flight flight=flightMap.get(flightId);
+            for(Airport airport:airportMap.values()){
+                if(airport.getCity().equals(flight.getFromCity())) ansAirport=airport;
+            }
+            if(ansAirport==null) throw new Exception("airport is null");
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
-        return ans;
+        return ansAirport.getAirportName();
     }
 
 
@@ -182,7 +251,8 @@ public class AirportController {
         //Add a passenger to the database
         //And return a "SUCCESS" message if the passenger has been added successfully
         try{
-            serviceLayerObj.addPassenger(passenger);
+            int id=passenger.getPassengerId();
+            passengerMap.put(id,passenger);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -190,4 +260,11 @@ public class AirportController {
     }
 
 
+    public List<Flight> getFlights(Integer personId) throws Exception{
+        return flightListMap.getOrDefault(personId,new ArrayList<>());
+    }
+
+    public List<Passenger> getPassengerList(Integer flightId) throws Exception{
+        return passengerListMap.getOrDefault(flightId,new ArrayList<>());
+    }
 }
