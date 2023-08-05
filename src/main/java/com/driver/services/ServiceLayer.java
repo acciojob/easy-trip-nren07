@@ -38,12 +38,12 @@ public class ServiceLayer {
             }
             else if(max==terminals){
                 if(ansAirport.getAirportName().compareTo(airport.getAirportName())>0){
-                    ansAirport=airport
+                    ansAirport=airport;
                 }
             }
         }
         if(ansAirport!=null) return ansAirport.getAirportName();
-        return null;
+        return "null";
     }
 
     public double getShortestDurationOfPossibleBetweenTwoCities(City fromCity, City toCity){
