@@ -15,15 +15,17 @@ public class ServiceLayer {
     @Autowired
     private RepositoryLayer repositoryLayerObj;
 
-    public void addAirport(Airport airport){
+    public void addAirport(Airport airport) throws Exception{
+        if(airport==null) throw new Exception("airport is null");
         Map<String,Airport> airportMap=repositoryLayerObj.getAirportMap();
         String airportName=airport.getAirportName();
         airportMap.put(airportName,airport);
         repositoryLayerObj.setAirportMap(airportMap);
     }
 
-    public String getLargestAirportName(){
+    public String getLargestAirportName() throws Exception{
         Map<String,Airport> airportMap=repositoryLayerObj.getAirportMap();
+        if(airportMap.size()==0) throw new Exception("airport list is empty");
         Airport ansAirport=null;
         int max=0;
         for(Airport airport : airportMap.values()){
@@ -38,11 +40,11 @@ public class ServiceLayer {
                 }
             }
         }
-        if(ansAirport!=null) return ansAirport.getAirportName();
-        return "null";
+        return ansAirport.getAirportName();
     }
 
-    public double getShortestDurationOfPossibleBetweenTwoCities(City fromCity, City toCity){
+    public double getShortestDurationOfPossibleBetweenTwoCities(City fromCity, City toCity) throws Exception{
+        if(fromCity==null || toCity==null) throw new Exception("form city or to city is null");
         Map<Integer, Flight> flightMap=repositoryLayerObj.getFlightMap();
         double min=-1.0;
         for(Flight flight : flightMap.values()){
@@ -55,31 +57,34 @@ public class ServiceLayer {
         return min;
     }
 
-    public void addFlight(Flight flight) {
+    public void addFlight(Flight flight) throws Exception {
+        if(flight==null) throw new Exception("given flight is null");
         int id=flight.getFlightId();
         Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
         flightMap.put(id,flight);
         repositoryLayerObj.setFlightMap(flightMap);
     }
 
-    public void addPassenger(Passenger passenger){
+    public void addPassenger(Passenger passenger) throws Exception{
+        if(passenger==null) throw new Exception("passenger is null");
         Map<Integer,Passenger>passengerMap=repositoryLayerObj.getPassengerMap();
         int id=passenger.getPassengerId();
         passengerMap.put(id,passenger);
         repositoryLayerObj.setPassengerMap(passengerMap);
     }
 
-    public String getAirportNameFromFlightId(Integer flightId){
+    public String getAirportNameFromFlightId(Integer flightId) throws Exception{
         Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
         Map<String,Airport>airportMap=repositoryLayerObj.getAirportMap();
 
         Flight flight=flightMap.getOrDefault(flightId,null);
-        if(flight==null) return null;
-
+        if(flight==null) throw new Exception("flight is null");
+        Airport ansAirport=null;
         for(Airport airport:airportMap.values()){
-            if(airport.getCity().equals(flight.getFromCity())) return airport.getAirportName();
+            if(airport.getCity().equals(flight.getFromCity())) ansAirport=airport;
         }
-        return null;
+        if(ansAirport==null) throw new Exception("airport is null");
+        return ansAirport.getAirportName();
     }
 
     public String bookATicket(Integer flightId,Integer passengerId){
