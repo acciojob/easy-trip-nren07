@@ -48,9 +48,8 @@ public class ServiceLayer {
     }
 
     public double getShortestDurationOfPossibleBetweenTwoCities(City fromCity, City toCity){
-        if(fromCity==null || toCity==null) throw new NullPointerException("provided city is null");
         Map<Integer, Flight> flightMap=repositoryLayerObj.getFlightMap();
-        double min=-1;
+        double min=0;
         for(Flight flight : flightMap.values()){
             if(flight.getFromCity().equals(fromCity) && flight.getToCity().equals(toCity)){
                 if(min>flight.getDuration()){
