@@ -1,11 +1,10 @@
-package com.driver.services;
+package com.driver.controllers;
 
 import com.driver.model.Airport;
 import com.driver.model.City;
 import com.driver.model.Flight;
 import com.driver.model.Passenger;
-import com.driver.repository.RepositoryLayer;
-import io.swagger.models.auth.In;
+import com.driver.controllers.RepositoryLayer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +15,8 @@ public class ServiceLayer {
     @Autowired
     private RepositoryLayer repositoryLayerObj;
 
-    public void addAirport(Airport airport)throws NullPointerException{
+    public void addAirport(Airport airport){
         Map<String,Airport> airportMap=repositoryLayerObj.getAirportMap();
-        if(airport==null) throw new NullPointerException("airport is null");
         String airportName=airport.getAirportName();
         airportMap.put(airportName,airport);
         repositoryLayerObj.setAirportMap(airportMap);
@@ -57,14 +55,14 @@ public class ServiceLayer {
         return min;
     }
 
-    public void addFlight(Flight flight) throws  NullPointerException{
-        if(flight==null) throw new NullPointerException("flight data is null");
+    public void addFlight(Flight flight) {
         int id=flight.getFlightId();
-
+        Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
+        flightMap.put(id,flight);
+        repositoryLayerObj.setFlightMap(flightMap);
     }
 
-    public void addPassenger(Passenger passenger) throws NullPointerException{
-        if(passenger==null) throw new NullPointerException("passenger is null");
+    public void addPassenger(Passenger passenger){
         Map<Integer,Passenger>passengerMap=repositoryLayerObj.getPassengerMap();
         int id=passenger.getPassengerId();
         passengerMap.put(id,passenger);

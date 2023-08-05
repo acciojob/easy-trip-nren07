@@ -5,18 +5,10 @@ import com.driver.model.Airport;
 import com.driver.model.City;
 import com.driver.model.Flight;
 import com.driver.model.Passenger;
-import com.driver.repository.RepositoryLayer;
-import com.driver.services.ServiceLayer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Provider;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @RestController
 public class AirportController {
@@ -30,11 +22,7 @@ public class AirportController {
 
         //Simply add airport details to your database
         //Return a String message "SUCCESS"
-        try{
-            serviceLayerObj.addAirport(airport);
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-        }
+        serviceLayerObj.addAirport(airport);
         return "SUCCESS";
     }
 
@@ -52,12 +40,7 @@ public class AirportController {
         //Find the duration by finding the shortest flight that connects these 2 cities directly
         //If there is no direct flight between 2 cities return -1.
         double distance=0;
-        try{
-            distance=serviceLayerObj.getShortestDurationOfPossibleBetweenTwoCities(fromCity,toCity);
-
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+        distance=serviceLayerObj.getShortestDurationOfPossibleBetweenTwoCities(fromCity,toCity);
         return distance;
     }
 
@@ -66,7 +49,6 @@ public class AirportController {
 
         //Calculate the total number of people who have flights on that day on a particular airport
         //This includes both the people who have come for a flight and who have landed on an airport after their flight
-
         return serviceLayerObj.getNumberOfPeopleOn(date,airportName);
     }
 
@@ -110,19 +92,14 @@ public class AirportController {
 
         //Tell the count of flight bookings done by a passenger: This will tell the total count of flight bookings done by a passenger :
         int ans=serviceLayerObj.countOfBookingsDoneByPassengerAllCombined(passengerId);
-       return ans;
+        return ans;
     }
 
     @PostMapping("/add-flight")
     public String addFlight(@RequestBody Flight flight){
 
         //Return a "SUCCESS" message string after adding a flight
-        try{
-            serviceLayerObj.addFlight(flight);
-
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-        }
+        serviceLayerObj.addFlight(flight);
         return "SUCCESS";
     }
 
