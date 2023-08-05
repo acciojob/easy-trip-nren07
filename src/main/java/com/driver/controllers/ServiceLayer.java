@@ -86,51 +86,53 @@ public class ServiceLayer {
         return ansAirport.getAirportName();
     }
 
-    public String bookATicket(Integer flightId,Integer passengerId){
+    public String bookATicket(Integer flightId,Integer passengerId) throws Exception{
         Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
-        Flight flight=flightMap.getOrDefault(flightId,null);
         Map<Integer,Passenger>passengerMap=repositoryLayerObj.getPassengerMap();
-        Passenger passenger=passengerMap.getOrDefault(passengerId,null);
-        if(flight==null || passenger==null || flight.getMaxCapacity()==0) return "FAILURE";
+        if(!flightMap.containsKey(flightId) || !passengerMap.containsKey(passengerId))
+            throw new Exception("may be flight or passenger id is not valid");
         Map<Integer,List<Flight>>flightListMap=repositoryLayerObj.getFlightListMap();
         Map<Integer,List<Passenger>>passengerListMap=repositoryLayerObj.getPassengerListMap();
+        Flight flight=flightMap.get(flightId);
+        Passenger passenger=passengerMap.get(passengerId);
         if(passengerListMap.containsKey(flightId) && passengerListMap.get(flightId).contains(passenger)){
             return "FAILURE";
         }
-        flight.setMaxCapacity(flight.getMaxCapacity()-1);
-        flightMap.put(flightId,flight);
-        repositoryLayerObj.setFlightMap(flightMap);
-        List<Flight>flightList=flightListMap.getOrDefault(passengerId,new ArrayList<>());
-        flightList.add(flight);
-        flightListMap.put(passengerId,flightList);
+        if(passengerListMap.containsKey(flightId)){
+            if(flight.getMaxCapacity()==passengerListMap.get(flightId).size()) return "FAILURE";
+        }
+        List<Flight>oldFlightList=flightListMap.getOrDefault(passengerId,new ArrayList<>());
+        oldFlightList.add(flight);
+        List<Passenger>oldPassengerList=passengerListMap.getOrDefault(flightId,new ArrayList<>());
+        oldPassengerList.add(passenger);
+        flightListMap.put(passengerId,oldFlightList);
+        passengerListMap.put(flightId,oldPassengerList);
         repositoryLayerObj.setFlightListMap(flightListMap);
-        List<Passenger>passengerList=passengerListMap.getOrDefault(flightId,new ArrayList<>());
-        passengerList.add(passenger);
-        passengerListMap.put(flightId,passengerList);
         repositoryLayerObj.setPassengerListMap(passengerListMap);
         return "SUCCESS";
     }
-    public String cancelATicket(Integer flightId,Integer passengerId){
+    public String cancelATicket(Integer flightId,Integer passengerId) throws Exception{
         Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
-        Flight flight=flightMap.getOrDefault(flightId,null);
         Map<Integer,Passenger>passengerMap=repositoryLayerObj.getPassengerMap();
-        Passenger passenger=passengerMap.getOrDefault(passengerId,null);
-        if(flight==null || passenger==null ) return "FAILURE";
+        if(flightMap.containsKey(flightId) || passengerMap.containsKey(passengerId))
+            throw new Exception("may be flight or passenger id is not valid");
         Map<Integer,List<Flight>>flightListMap=repositoryLayerObj.getFlightListMap();
         Map<Integer,List<Passenger>>passengerListMap=repositoryLayerObj.getPassengerListMap();
+        Flight flight=flightMap.get(flightId);
+        Passenger passenger=passengerMap.get(passengerId);
         if(!passengerListMap.containsKey(flightId) || !passengerListMap.get(flightId).contains(passenger)){
             return "FAILURE";
         }
-        flight.setMaxCapacity(flight.getMaxCapacity()+1);
-        flightMap.put(flightId,flight);
-        repositoryLayerObj.setFlightMap(flightMap);
-        List<Flight>flightList=flightListMap.getOrDefault(passengerId,new ArrayList<>());
-        flightList.remove(flight);
-        flightListMap.put(passengerId,flightList);
+        if(passengerListMap.containsKey(flightId)){
+            if(flight.getMaxCapacity()==passengerListMap.get(flightId).size()) return "FAILURE";
+        }
+        List<Flight>oldFlightList=flightListMap.getOrDefault(passengerId,new ArrayList<>());
+        oldFlightList.remove(flight);
+        List<Passenger>oldPassengerList=passengerListMap.getOrDefault(flightId,new ArrayList<>());
+        oldPassengerList.remove(passenger);
+        flightListMap.put(passengerId,oldFlightList);
+        passengerListMap.put(flightId,oldPassengerList);
         repositoryLayerObj.setFlightListMap(flightListMap);
-        List<Passenger>passengerList=passengerListMap.getOrDefault(flightId,new ArrayList<>());
-        passengerList.remove(passenger);
-        passengerListMap.put(flightId,passengerList);
         repositoryLayerObj.setPassengerListMap(passengerListMap);
         return "SUCCESS";
     }

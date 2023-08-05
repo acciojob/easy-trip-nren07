@@ -15,8 +15,8 @@ public class RepositoryLayer {
     Map<String, Airport> airportMap=new HashMap<>(); // key airport Name
     Map<Integer, Flight>flightMap=new HashMap<>();
     Map<Integer,Passenger>passengerMap=new HashMap<>();
-    Map<Integer, List<Passenger>>passengerListMap=new HashMap<>();
-    Map<Integer,List<Flight>>flightListMap=new HashMap<>();
+    Map<Integer, List<Passenger>>passengerListMap=new HashMap<>(); //flight id
+    Map<Integer,List<Flight>>flightListMap=new HashMap<>();  //passenger id
 
     Map<Integer,Integer>bookingMap=new HashMap<>();
 
