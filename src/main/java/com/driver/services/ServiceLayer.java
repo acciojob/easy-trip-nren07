@@ -26,22 +26,24 @@ public class ServiceLayer {
         repositoryLayerObj.setAirportMap(airportMap);
     }
 
-    public String getLargestAirportName() throws NullPointerException{
+    public String getLargestAirportName(){
         Map<String,Airport> airportMap=repositoryLayerObj.getAirportMap();
         String largestAirport="";
         int max=0;
-        for(String key :airportMap.keySet()){
-            int terminals=airportMap.get(key).getNoOfTerminals();
-            if(max<terminals) largestAirport=airportMap.get(key).getAirportName();
+        for(Airport airport : airportMap.values()){
+            int terminals=airport.getNoOfTerminals();
+            if(max<terminals) {
+                max=terminals;
+                largestAirport=airport.getAirportName();
+            }
             else if(max==terminals){
-                if(largestAirport.compareTo(airportMap.get(key).getAirportName())>0){
+                if(largestAirport.compareTo(airport.getAirportName())<0){
                     largestAirport=largestAirport;
                 }else{
-                    largestAirport=airportMap.get(key).getAirportName();
+                    largestAirport=airport.getAirportName();
                 }
             }
         }
-        if(largestAirport==null) throw new NullPointerException("airport is null");
         return largestAirport;
     }
 

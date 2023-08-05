@@ -43,13 +43,7 @@ public class AirportController {
 
         //Largest airport is in terms of terminals. 3 terminal airport is larger than 2 terminal airport
         //Incase of a tie return the Lexicographically smallest airportName
-        String largestAirport="";
-        try{
-            largestAirport=serviceLayerObj.getLargestAirportName();
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-        return largestAirport;
+        return serviceLayerObj.getLargestAirportName();
     }
 
     @GetMapping("/get-shortest-time-travel-between-cities")
@@ -127,11 +121,11 @@ public class AirportController {
         //Return a "SUCCESS" message string after adding a flight
         try{
             serviceLayerObj.addFlight(flight);
-            return "SUCCESS";
+
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-        return "";
+        return "SUCCESS";
     }
 
 
@@ -162,15 +156,14 @@ public class AirportController {
     public String addPassenger(@RequestBody Passenger passenger){
 
         //Add a passenger to the database
-        //And return a "SUCCESS" message if the passenger has been added successfully.
-        String ans="";
+        //And return a "SUCCESS" message if the passenger has been added successfully
         try{
             serviceLayerObj.addPassenger(passenger);
-            return "SUCCESS";
+
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
-        return "";
+        return "SUCCESS";
     }
 
 
