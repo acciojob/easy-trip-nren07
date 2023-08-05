@@ -163,9 +163,8 @@ public class AirportController {
         // then return a "FAILURE" message
         // Otherwise return a "SUCCESS" message
         // and also cancel the ticket that passenger had booked earlier on the given flightId
-        String ans="";
         try{
-            if(flightMap.containsKey(flightId) || passengerMap.containsKey(passengerId))
+            if(!flightMap.containsKey(flightId) || !passengerMap.containsKey(passengerId))
                 return "FAILURE";
 
             Flight flight=flightMap.get(flightId);
@@ -232,7 +231,7 @@ public class AirportController {
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
-        return ansAirport.getAirportName();
+        return "null";
     }
 
 
