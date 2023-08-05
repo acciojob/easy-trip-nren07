@@ -226,7 +226,7 @@ public class AirportController {
             for(Airport airport:airportMap.values()){
                 if(airport.getCity().equals(flight.getFromCity())) ansAirport=airport;
             }
-            if(ansAirport==null) throw new Exception("airport is null");
+            return ansAirport.getAirportName();
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
@@ -240,10 +240,15 @@ public class AirportController {
         //Calculate the total revenue that a flight could have
         //That is of all the passengers that have booked a flight till now and then calculate the revenue
         //Revenue will also decrease if some passenger cancels the flight
-
-        return 505;
+        int fare=0;
+        try{
+            int size=getPassengerList(flightId).size();
+            fare= 3000*size+50*size*(size+1)/2;
+        }catch (Exception e){
+            System.out.printf("null");
+        }
+        return fare;
     }
-
 
     @PostMapping("/add-passenger")
     public String addPassenger(@RequestBody Passenger passenger){
