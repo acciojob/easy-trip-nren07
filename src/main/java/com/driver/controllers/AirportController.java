@@ -245,7 +245,7 @@ public class AirportController {
         int fare=0;
         try{
             int size=getPassengerList(flightId).size();
-            fare= 3000*size+(50*size*((int)(size+1))/2);
+            fare= 3000*size+(50*size*(size-1)/2);
         }catch (Exception e){
             System.out.printf("null");
         }
