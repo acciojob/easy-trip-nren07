@@ -28,23 +28,22 @@ public class ServiceLayer {
 
     public String getLargestAirportName(){
         Map<String,Airport> airportMap=repositoryLayerObj.getAirportMap();
-        String largestAirport="";
+        Airport ansAirport=null;
         int max=0;
         for(Airport airport : airportMap.values()){
             int terminals=airport.getNoOfTerminals();
             if(max<terminals) {
                 max=terminals;
-                largestAirport=airport.getAirportName();
+                ansAirport=airport;
             }
             else if(max==terminals){
-                if(largestAirport.compareTo(airport.getAirportName())<0){
-                    largestAirport=largestAirport;
-                }else{
-                    largestAirport=airport.getAirportName();
+                if(ansAirport.getAirportName().compareTo(airport.getAirportName())>0){
+                    ansAirport=airport
                 }
             }
         }
-        return largestAirport;
+        if(ansAirport!=null) return ansAirport.getAirportName();
+        return null;
     }
 
     public double getShortestDurationOfPossibleBetweenTwoCities(City fromCity, City toCity){
