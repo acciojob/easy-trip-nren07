@@ -51,16 +51,14 @@ public class AirportController {
 
         //Find the duration by finding the shortest flight that connects these 2 cities directly
         //If there is no direct flight between 2 cities return -1.
-        double distance=-1;
+        double distance=0;
         try{
             distance=serviceLayerObj.getShortestDurationOfPossibleBetweenTwoCities(fromCity,toCity);
-            return distance;
+
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
-        return 0;
-
-
+        return distance;
     }
 
     @GetMapping("/get-number-of-people-on-airport-on/{date}")
@@ -69,7 +67,7 @@ public class AirportController {
         //Calculate the total number of people who have flights on that day on a particular airport
         //This includes both the people who have come for a flight and who have landed on an airport after their flight
 
-        return 0;
+        return serviceLayerObj.getNumberOfPeopleOn(date,airportName);
     }
 
     @GetMapping("/calculate-fare")
@@ -157,12 +155,7 @@ public class AirportController {
 
         //Add a passenger to the database
         //And return a "SUCCESS" message if the passenger has been added successfully
-        try{
-            serviceLayerObj.addPassenger(passenger);
-
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+        serviceLayerObj.addPassenger(passenger);
         return "SUCCESS";
     }
 

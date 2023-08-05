@@ -9,9 +9,7 @@ import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ServiceLayer {
@@ -48,7 +46,7 @@ public class ServiceLayer {
 
     public double getShortestDurationOfPossibleBetweenTwoCities(City fromCity, City toCity){
         Map<Integer, Flight> flightMap=repositoryLayerObj.getFlightMap();
-        double min=0;
+        double min=-1.0;
         for(Flight flight : flightMap.values()){
             if(flight.getFromCity().equals(fromCity) && flight.getToCity().equals(toCity)){
                 if(min>flight.getDuration()){
@@ -142,6 +140,19 @@ public class ServiceLayer {
     public int calculateFlightFare(Integer flightId){
         int size=repositoryLayerObj.getPassengerList(flightId).size();
         return 3000+size*50;
+    }
+
+    public int getNumberOfPeopleOn(Date date, String airportName){
+        Map<Integer,Flight>flightMap=repositoryLayerObj.getFlightMap();
+        Map<String,Airport>airportMap=repositoryLayerObj.getAirportMap();
+        City city=airportMap.get(airportName).getCity();
+        int cnt=0;
+        for(Flight flight : flightMap.values() ){
+            if(flight.getFlightDate().equals(date) && (flight.getFromCity().equals(city) || flight.getToCity().equals(city))){
+                cnt++;
+            }
+        }
+        return cnt;
     }
 
 }
