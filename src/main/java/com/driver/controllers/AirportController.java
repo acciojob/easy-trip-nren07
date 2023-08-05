@@ -32,11 +32,10 @@ public class AirportController {
         //Return a String message "SUCCESS"
         try{
             serviceLayerObj.addAirport(airport);
-            return "SUCCESS";
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-        return "";
+        return "SUCCESS";
     }
 
     @GetMapping("/get-largest-aiport")
@@ -46,7 +45,7 @@ public class AirportController {
         //Incase of a tie return the Lexicographically smallest airportName
         String largestAirport="";
         try{
-            largestAirport+=serviceLayerObj.getLargestAirportName();
+            largestAirport=serviceLayerObj.getLargestAirportName();
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
