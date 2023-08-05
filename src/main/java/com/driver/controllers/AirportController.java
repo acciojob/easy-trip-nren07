@@ -5,6 +5,7 @@ import com.driver.model.Airport;
 import com.driver.model.City;
 import com.driver.model.Flight;
 import com.driver.model.Passenger;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,7 +66,7 @@ public class AirportController {
 
         //Find the duration by finding the shortest flight that connects these 2 cities directly
         //If there is no direct flight between 2 cities return -1.
-        double distance=-1.0;
+        double distance=1000000000.00;
         try{
             for(Flight flight : flightMap.values()) {
                 if (flight.getFromCity().equals(fromCity) && flight.getToCity().equals(toCity)) {
@@ -77,6 +78,7 @@ public class AirportController {
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
+        if(distance==1000000000.00) return -1.0;
         return distance;
 
     }
@@ -243,7 +245,7 @@ public class AirportController {
         int fare=0;
         try{
             int size=getPassengerList(flightId).size();
-            fare= 3000*size+50*size*(size+1)/2;
+            fare= 3000*size+(50*size*((int)(size+1))/2);
         }catch (Exception e){
             System.out.printf("null");
         }
